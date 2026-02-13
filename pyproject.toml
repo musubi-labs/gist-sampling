@@ -40,6 +40,11 @@ dev = [
     "ruff>=0.9.0",
     "pre-commit>=3.0",
 ]
+extra = [
+    "datasets",
+    "sentence-transformers",
+    "matplotlib",
+]
 [tool.hatch.version]
 path = "src/gist_sampling/_version.py"
 

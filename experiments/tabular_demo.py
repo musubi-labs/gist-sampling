@@ -58,8 +58,13 @@ def _load_adult_onehot(max_rows: int) -> tuple[np.ndarray, np.ndarray]:
 
     y = (df["class"] == ">50K").astype(int).values
 
-    cat_cols = df.select_dtypes(include="category").columns.tolist()
-    cat_cols.remove("class")
+    # OpenML dtype inference can differ by environment (object vs category).
+    # Include both and safely exclude target.
+    cat_cols = [
+        col
+        for col in df.select_dtypes(include=["object", "category"]).columns.tolist()
+        if col != "class"
+    ]
     X = pd.get_dummies(df[cat_cols], drop_first=False).values.astype(np.float64)
 
     return X, y
@@ -150,7 +155,7 @@ def _print_benchmark(
     print(f"\n{'=' * 70}")
     print("  PART 1: AUC BENCHMARK")
     print(f"{'=' * 70}")
-    print(f"  Adult Census (one-hot categorical features)")
+    print("  Adult Census (one-hot categorical features)")
     print()
     header = f"  {'Budget':<15}"
     for method in ["Random", "Stratified", "GIST"]:
@@ -216,7 +221,7 @@ def _run_diagnosis(X: np.ndarray, y: np.ndarray, seed: int) -> None:
     nn_rate = np.mean(same_label_rates)
     baseline = max(y.mean(), 1 - y.mean())
 
-    print(f"\n  10-nearest-neighbor same-label rate:")
+    print("\n  10-nearest-neighbor same-label rate:")
     print(f"    Observed:  {nn_rate:.3f}")
     print(f"    Baseline:  {baseline:.3f} (majority class rate)")
     print(
@@ -228,7 +233,7 @@ def _run_diagnosis(X: np.ndarray, y: np.ndarray, seed: int) -> None:
     labels = km.fit_predict(X_sub)
     sil = silhouette_score(X_sub, labels, sample_size=min(1000, n_sample), random_state=seed)
 
-    print(f"\n  Cluster structure (k-means, k=15):")
+    print("\n  Cluster structure (k-means, k=15):")
     print(f"    Silhouette score: {sil:.3f} (>0.5 = strong, <0.25 = weak)")
     print(
         f"    --> {'No meaningful cluster structure' if sil < 0.25 else 'Some cluster structure'}"
@@ -335,7 +340,7 @@ def main() -> None:
     sparsity = (X == 0).sum() / X.size
     pos_rate = y.mean()
 
-    print(f"\nDataset: Adult Census (categorical features only)")
+    print("\nDataset: Adult Census (categorical features only)")
     print(f"  Rows:      {n}")
     print(f"  Features:  {n_features} (one-hot encoded)")
     print(f"  Sparsity:  {sparsity:.1%}")

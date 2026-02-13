@@ -442,6 +442,11 @@ def _run_dataset(
 
     algo_jobs = args.n_jobs
     seed_jobs = max(1, min(args.seed_jobs, len(args.seeds)))
+    if seed_jobs > 1:
+        print(
+            "Note: running multiple seed workers duplicates dataset arrays per process; "
+            "high --seed-jobs may increase memory usage significantly."
+        )
     if seed_jobs > 1 and algo_jobs == -1:
         cpu_count = os.cpu_count() or 1
         algo_jobs = max(1, cpu_count // seed_jobs)

@@ -1,0 +1,10 @@
+data/
+tmp/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+.DS_Store
+.cache/
+experiments/

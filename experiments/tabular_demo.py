@@ -135,8 +135,6 @@ def _run_benchmark(
                 metric="euclidean",
                 epsilon=0.05,
                 lambda_diversity=1.0,
-                random_state=seed,
-                mode="auto",
             )
             sel.fit(X_train)
             gi = sel.selected_indices_

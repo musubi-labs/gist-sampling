@@ -1,26 +1,21 @@
-"""Test fixtures."""
+"""Shared fixtures."""
+
+from __future__ import annotations
 
 import numpy as np
-import pandas as pd
 import pytest
 
-
-@pytest.fixture
-def simple_data():
-    """Simple 2D data with two clusters."""
-    np.random.seed(42)
-    cluster1 = np.random.randn(20, 2)
-    cluster2 = np.random.randn(20, 2) + np.array([10, 10])
-    return np.vstack([cluster1, cluster2])
+from helpers import SCIPY_METRIC
 
 
 @pytest.fixture
-def simple_df(simple_data):
-    """Simple DataFrame with two clusters."""
-    return pd.DataFrame(simple_data, columns=["x", "y"])
+def two_clusters() -> np.ndarray:
+    """Forty 2-D points: two well-separated clusters of twenty."""
+    rng = np.random.default_rng(42)
+    return np.vstack([rng.normal(size=(20, 2)), rng.normal(size=(20, 2)) + 10])
 
 
-@pytest.fixture
-def collinear_data():
-    """1D collinear data."""
-    return np.array([[i] for i in range(10)], dtype=float)
+@pytest.fixture(params=sorted(SCIPY_METRIC))
+def metric(request) -> str:
+    """Each metric computed from features."""
+    return request.param

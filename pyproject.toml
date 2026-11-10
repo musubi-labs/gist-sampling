@@ -1,62 +1,84 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
 name = "gist-sampling"
 dynamic = ["version"]
-description = "GIST (Greedy Independent Set Thresholding) algorithm for diversity-aware DataFrame downsampling"
+description = "Diverse, representative subset selection with GIST (Greedy Independent Set Thresholding)"
 readme = "README.md"
-license = { file = "LICENSE" }
-requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
 authors = [
     { name = "Filip" },
 ]
-keywords = ["sampling", "diversity", "submodular", "optimization", "pandas"]
+keywords = [
+    "sampling",
+    "subset selection",
+    "coreset",
+    "diversity",
+    "submodular",
+    "facility location",
+    "active learning",
+]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
 ]
 dependencies = [
-    "numpy>=1.23",
-    "pandas>=1.5",
-    "numba>=0.57",
-    "scikit-learn>=1.3",
-    "scipy>=1.10",
-    "threadpoolctl>=3.6.0",
+    "numba>=0.59",
+    "numpy>=1.26",
+    "scikit-learn>=1.4",
+    "scipy>=1.12",
+    "threadpoolctl>=3.2",
 ]
 
-[project.optional-dependencies]
+[project.urls]
+Repository = "https://github.com/musubi-labs/gist-sampling"
+Issues = "https://github.com/musubi-labs/gist-sampling/issues"
+Changelog = "https://github.com/musubi-labs/gist-sampling/blob/main/CHANGELOG.md"
+
+[dependency-groups]
 dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "ruff>=0.9.0",
+    "pandas>=2.0",
     "pre-commit>=3.0",
+    "pytest>=8.0",
+    "ruff>=0.9.0",
 ]
-extra = [
-    "datasets",
-    "sentence-transformers",
-    "matplotlib",
+experiments = [
+    "datasets>=2.14",
+    "matplotlib>=3.7",
+    "pandas>=2.0",
+    "sentence-transformers>=3.0",
 ]
+
 [tool.hatch.version]
 path = "src/gist_sampling/_version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/gist_sampling"]
 
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/CHANGELOG.md", "/LICENSE", "/README.md", "/pyproject.toml"]
+
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["src"]
+testpaths = ["tests", "src"]
+pythonpath = ["src", "tests"]
+addopts = ["--doctest-modules"]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 line-length = 100
 src = ["src", "tests"]
 
@@ -68,10 +90,17 @@ select = [
     "I",      # isort
     "UP",     # pyupgrade
     "B",      # flake8-bugbear
+    "SIM",    # flake8-simplify
+    "NPY",    # numpy
+    "PT",     # flake8-pytest-style
+    "RUF",    # ruff
 ]
 ignore = [
     "E501",   # line too long (handled by formatter)
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"experiments/*" = ["SIM", "RUF"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["gist_sampling"]

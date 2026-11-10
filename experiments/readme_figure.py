@@ -70,13 +70,11 @@ def make_points() -> tuple[np.ndarray, np.ndarray]:
 
 
 def describe(group: np.ndarray, picks: np.ndarray) -> str:
-    """How the picks are spread over the groups, in words."""
-    counts = np.bincount(group[picks], minlength=len(GROUPS))
-    missed = int((counts == 0).sum())
-    largest = f"{counts[0]} of {len(picks)} picks in the largest group"
+    """How many groups the picks reach, in words."""
+    missed = len(GROUPS) - np.unique(group[picks]).size
     if missed == 0:
-        return f"{largest}, every group reached"
-    return f"{largest}, {missed} of {len(GROUPS)} groups missed"
+        return "every group reached"
+    return f"{missed} of {len(GROUPS)} groups missed"
 
 
 def main() -> None:

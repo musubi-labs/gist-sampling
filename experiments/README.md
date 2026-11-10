@@ -7,7 +7,7 @@ Install their dependencies first:
 uv sync --group experiments
 ```
 
-The results quoted in `blog_draft.md` were produced with version 0.1 of the package. Version 1.0
+The results quoted in `blog_draft.md` were produced with version 0.1 of the package. Version 0.2
 changed some defaults (see the [changelog](../CHANGELOG.md)), so rerunning the scripts will not
 reproduce those numbers exactly.
 

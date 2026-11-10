@@ -190,8 +190,10 @@ additionally rejects rows that are entirely zero.
 
 ## Upgrading from 0.1
 
-Version 1.0 is a rewrite and changes some parameters and defaults. See the
+Version 0.2 is a rewrite and changes some parameters and defaults. See the
 [changelog](https://github.com/musubi-labs/gist-sampling/blob/main/CHANGELOG.md) for what changed and how to update your code.
+
+Defaults may still change before version 1.0. Every such change will be listed in the changelog.
 
 ## Development
 

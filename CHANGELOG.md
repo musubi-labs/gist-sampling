@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-11-10
+## [0.2.0] - 2026-11-10
 
 A rewrite of the package. The public interface is now `GISTSelector`, `gist_sample` and
 `__version__`; everything else is private. Selections are deterministic and, with default
@@ -12,7 +12,7 @@ settings, do not depend on the units of the data.
 
 ### Upgrading from 0.1
 
-| 0.1 | 1.0 |
+| 0.1 | 0.2 |
 | --- | --- |
 | `mode="exact"` | `n_neighbors=None` |
 | `mode="approximate", k_neighbors=k` | `n_neighbors=k` |
@@ -73,7 +73,7 @@ The whole selection now runs in compiled code, the distance thresholds are tried
 no distance matrix is stored. Measured against 0.1 on the same machine and the same objective
 (16 cores, clustered synthetic data, compilation excluded):
 
-| Points | Features | `n_samples` | Similarities | 0.1 | 1.0 | Speed-up |
+| Points | Features | `n_samples` | Similarities | 0.1 | 0.2 | Speed-up |
 | ---: | ---: | ---: | --- | ---: | ---: | ---: |
 | 2,000 | 32 | 100 | all pairs | 0.24 s | 0.013 s | 18x |
 | 5,000 | 64 | 200 | all pairs | 2.9 s | 0.09 s | 32x |
@@ -82,11 +82,11 @@ no distance matrix is stored. Measured against 0.1 on the same machine and the s
 | 20,000 | 64 | 500 | 100 nearest | 6.6 s | 0.61 s | 11x |
 | 20,000 | 384 | 500 | 100 nearest | 12.2 s | 1.33 s | 9x |
 
-In every case the objective reached by 1.0 was equal to or higher than that of 0.1. Keeping all
+In every case the objective reached by 0.2 was equal to or higher than that of 0.1. Keeping all
 pairwise similarities now takes 4 bytes per pair instead of 16.
 
 ## 0.1.0 - 2026-02-13
 
 Initial experimental version. It was never tagged or published to PyPI.
 
-[1.0.0]: https://github.com/musubi-labs/gist-sampling/releases/tag/v1.0.0
+[0.2.0]: https://github.com/musubi-labs/gist-sampling/releases/tag/v0.2.0

@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-11-09
+## [1.0.0] - 2026-11-10
 
 A rewrite of the package. The public interface is now `GISTSelector`, `gist_sample` and
 `__version__`; everything else is private. Selections are deterministic and, with default

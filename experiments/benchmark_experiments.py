@@ -54,7 +54,7 @@ def _parse_args() -> argparse.Namespace:
         "--gist-lambda",
         type=float,
         default=1.0,
-        help="Diversity weight (λ) for GIST objective f(S)=g(S)+λ·div(S)",
+        help="Diversity weight (lambda_diversity) of the GIST objective",
     )
     parser.add_argument(
         "--embedding-batch-size",
@@ -73,22 +73,10 @@ def _parse_args() -> argparse.Namespace:
         help="If set, cache embeddings in this directory",
     )
     parser.add_argument(
-        "--gist-mode",
-        choices=["auto", "exact", "approximate"],
+        "--n-neighbors",
+        type=_n_neighbors,
         default="auto",
-        help="GIST computation mode (auto/exact/approximate)",
-    )
-    parser.add_argument(
-        "--approximate-threshold",
-        type=int,
-        default=2000,
-        help="Row threshold for auto mode to switch to approximate",
-    )
-    parser.add_argument(
-        "--k-neighbors",
-        type=int,
-        default=200,
-        help="k-NN size for sparse similarity in approximate mode",
+        help="Similarities kept per point: an integer, 'all' (exact) or 'auto'",
     )
     parser.add_argument(
         "--n-jobs",
@@ -129,6 +117,14 @@ def _parse_args() -> argparse.Namespace:
         help="Embedding model",
     )
     return parser.parse_args()
+
+
+def _n_neighbors(value: str) -> int | str | None:
+    if value == "auto":
+        return "auto"
+    if value == "all":
+        return None
+    return int(value)
 
 
 def _select_k(n_rows: int, sample_frac: float) -> int:
@@ -255,11 +251,8 @@ def _stratified_gist_indices(
     metric: str,
     epsilon: float,
     lambda_diversity: float,
-    random_state: int,
     n_jobs: int,
-    mode: str,
-    approximate_threshold: int,
-    k_neighbors: int,
+    n_neighbors: int | str | None,
 ) -> np.ndarray:
     indices = np.arange(len(y))
     classes, counts = np.unique(y, return_counts=True)
@@ -288,17 +281,13 @@ def _stratified_gist_indices(
         if target[cls] >= len(cls_idx):
             selected.extend(cls_idx.tolist())
             continue
-        per_class_seed = random_state + int(cls)
         selector = GISTSelector(
             n_samples=target[cls],
             metric=metric,
             epsilon=epsilon,
             lambda_diversity=lambda_diversity,
-            random_state=per_class_seed,
+            n_neighbors=n_neighbors,
             n_jobs=n_jobs,
-            mode=mode,
-            approximate_threshold=approximate_threshold,
-            k_neighbors=k_neighbors,
         )
         selector.fit(X[cls_idx])
         picked = cls_idx[selector.selected_indices_]
@@ -322,9 +311,7 @@ def _evaluate_seed(
     gist_metric: str,
     gist_epsilon: float,
     gist_lambda: float,
-    gist_mode: str,
-    approximate_threshold: int,
-    k_neighbors: int,
+    n_neighbors: int | str | None,
     n_jobs: int,
 ) -> tuple[float, dict[float, dict[str, float]], dict[float, dict[str, float]]]:
     rng = np.random.default_rng(seed)
@@ -344,11 +331,8 @@ def _evaluate_seed(
             metric=gist_metric,
             epsilon=gist_epsilon,
             lambda_diversity=gist_lambda,
-            random_state=seed,
+            n_neighbors=n_neighbors,
             n_jobs=n_jobs,
-            mode=gist_mode,
-            approximate_threshold=approximate_threshold,
-            k_neighbors=k_neighbors,
         )
         gist_selector.fit(X_train)
         gist_idx = gist_selector.selected_indices_
@@ -362,11 +346,8 @@ def _evaluate_seed(
             gist_metric,
             gist_epsilon,
             gist_lambda,
-            seed,
             n_jobs,
-            gist_mode,
-            approximate_threshold,
-            k_neighbors,
+            n_neighbors,
         )
 
         results[frac] = {
@@ -462,9 +443,7 @@ def _run_dataset(
                     args.gist_metric,
                     args.gist_epsilon,
                     args.gist_lambda,
-                    args.gist_mode,
-                    args.approximate_threshold,
-                    args.k_neighbors,
+                    args.n_neighbors,
                     algo_jobs,
                 )
                 for seed in args.seeds
@@ -486,9 +465,7 @@ def _run_dataset(
                 args.gist_metric,
                 args.gist_epsilon,
                 args.gist_lambda,
-                args.gist_mode,
-                args.approximate_threshold,
-                args.k_neighbors,
+                args.n_neighbors,
                 algo_jobs,
             )
             full_aucs.append(full_auc)

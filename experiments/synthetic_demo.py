@@ -150,7 +150,7 @@ def _print_run(
         print(f"  {name:<30} {count:>6}{marker}")
 
     if clusters_missed:
-        print(f"\n  Missed clusters -- example posts the sample would never see:")
+        print("\n  Missed clusters -- example posts the sample would never see:")
         for name in clusters_missed:
             cluster_idx = [i for i, c in enumerate(CLUSTERS) if c["name"] == name][0]
             example = CLUSTERS[cluster_idx]["examples"][0]
@@ -302,8 +302,7 @@ def _run_comparison(
         metric="cosine",
         epsilon=0.05,
         lambda_diversity=1.0,
-        random_state=seed,
-        mode="exact",
+        n_neighbors=None,
     )
     selector.fit(X)
     gist_idx = selector.selected_indices_
@@ -328,7 +327,7 @@ def _run_comparison(
     print(f"  {'Blind spots (coverage < 0.5)':<40} {r_blind:>8} {g_blind:>8}")
 
     # Multi-seed stability
-    print(f"\n  Clusters covered across seeds:")
+    print("\n  Clusters covered across seeds:")
     for s in [42, 43, 44, 7, 13]:
         r = np.random.default_rng(s)
         ri = r.choice(n, size=k, replace=False)
@@ -337,8 +336,7 @@ def _run_comparison(
             metric="cosine",
             epsilon=0.05,
             lambda_diversity=1.0,
-            random_state=s,
-            mode="exact",
+            n_neighbors=None,
         )
         sel.fit(X)
         gi = sel.selected_indices_
